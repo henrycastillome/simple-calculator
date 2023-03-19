@@ -5,6 +5,7 @@ import {
 } from "react";
 import React from "react";
 import "./App.css";
+import * as math from 'mathjs';
 
 function App() {
 
@@ -17,38 +18,38 @@ function App() {
 
 
 
-  const handleClick = (e) => {
+  const validInputRegex = /^[\d+\-*/().]*$/;
 
-
-    if ((result.slice(-1) === "+" && result !== "") || (result.slice(-1) === "-" && result !== "") || (result.slice(-1) === "*" && result !== "") || (result.slice(-1) === "/" && result !== ""))
-
-      return; //avoing clicking in the same operator sign in a row
-
-
-    //using if statement to the first value not print the sign at the beginning
-    if (result === "") {
-      setResult(result.concat(inputRef.current.value))
-      setNumberRef(inputRef.current.value)
-    }
-    else {
-
-
-      setResult(result.concat(e.target.name, inputRef.current.value))
-      let res = result.concat(e.target.name, inputRef.current.value) // putting it in a variable to show the result in a second line
-      setNumberRef(eval(res).toString()) //showing the result in a second line
-
-    }
-
-
-    // inputRef.current.value = inputRef.current.focus(); // clearing the input field 
-
+const handleClick = (e) => {
+  const input = inputRef.current.value;
+  if (!validInputRegex.test(input)) {
+    alert("Invalid input");
+    return;
   }
+
+  if ((result.slice(-1) === "+" && result !== "") || (result.slice(-1) === "-" && result !== "") || (result.slice(-1) === "*" && result !== "") || (result.slice(-1) === "/" && result !== "")) {
+    return; // Avoid clicking the same operator sign in a row
+  }
+
+  // Use if statement to prevent the first value from printing the sign at the beginning
+  if (result === "") {
+    setResult(result.concat(input));
+    setNumberRef(input);
+  } else {
+    setResult(result.concat(e.target.name, input));
+    let res = result.concat(e.target.name, input); // Store the result in a variable to show the result in a second line
+    setNumberRef(math.evaluate(res).toString()); // Show the result in a second line
+  }
+};
 
 
   const clear = () => {
     setResult("");
     setNumberRef(0);
-    inputRef.current.value = inputRef.current.focus()
+    if(inputRef.current){
+    inputRef.current.value = "";
+    inputRef.current.focus();
+    }
 
 
   }
@@ -57,14 +58,6 @@ function App() {
     setResult(result.slice(0, -1));
   }
 
-  const calculate = () => {
-    try {
-      setResult(eval(result).toString());
-    }
-    catch (err) {
-      setResult("Error")
-    }
-  }
 
 
   return (
